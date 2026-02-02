@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhang.Mapper.ConsumptionMapper">
+    <insert id="insert" parameterType="com.zhang.Pojo.Entity.Consumption">
+        insert into consumption(user_id,event,amount,detail,create_time)
+        values(#{userId},#{event},#{amount},#{detail},#{createTime})
+    </insert>
+    <select id="page" resultType="com.zhang.Pojo.Entity.Consumption">
+        select *
+        from consumption
+    </select>
+</mapper>
