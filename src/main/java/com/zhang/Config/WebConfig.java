@@ -7,13 +7,14 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
     @Autowired
-    private TokenInterceptor tokenInterceptor;
+    private TokenInterceptor TokenInterceptor;
     //添加拦截器
     @Override
     public void addInterceptors(org.springframework.web.servlet.config.annotation.InterceptorRegistry registry) {
-        registry.addInterceptor(tokenInterceptor)
+        registry.addInterceptor(TokenInterceptor)
                 .addPathPatterns("/**")//拦截所有请求
-                .excludePathPatterns("/user/login");//登录接口不拦截
+                .excludePathPatterns("/admin/emp/login")//登录接口不拦截
+                .excludePathPatterns("/user/login");
     }
 
 }
