@@ -1,4 +1,4 @@
-package com.zhang.Pojo.Entity;
+package com.zhang.Pojo.VO;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Consumption {
+public class ConsumptionVO {
     private Long id;
     private Long userId;
     private String event;
@@ -17,4 +17,8 @@ public class Consumption {
     private String detail;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
+
+    private String name;
+
+
 }

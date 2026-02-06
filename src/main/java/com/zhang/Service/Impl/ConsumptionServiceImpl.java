@@ -7,9 +7,9 @@ import com.zhang.Pojo.DTO.ConsumptionQueryDTO;
 import com.zhang.Pojo.Entity.Consumption;
 import com.zhang.Pojo.Entity.PageResult;
 import com.zhang.Service.ConsumptionService;
-import com.zhang.Utils.CurrentHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -25,7 +25,7 @@ public class ConsumptionServiceImpl implements ConsumptionService {
     @Override
     public void save(Consumption consumption){
         consumption.setCreateTime(LocalDateTime.now());
-        consumption.setUserId(CurrentHolder.getCurrentId());
+        consumption.setUpdateTime(LocalDateTime.now());
         consumptionMapper.insert(consumption);
     }
     /**
@@ -33,12 +33,22 @@ public class ConsumptionServiceImpl implements ConsumptionService {
      * @param consumptionQueryDTO
      * @return
      */
-    //分页条件查询
     @Override
     public PageResult<Consumption> page(ConsumptionQueryDTO  consumptionQueryDTO){
-        //调用pagehelper
-        PageHelper.startPage(consumptionQueryDTO.getPage(),consumptionQueryDTO.getPageSize());
-        Page<Consumption> page =  consumptionMapper.page(consumptionQueryDTO);
+        LocalDateTime beginDateTime = consumptionQueryDTO.getBeginDate()==null?null:consumptionQueryDTO.getBeginDate().atStartOfDay();
+        LocalDateTime endDateTime = consumptionQueryDTO.getEndDate()==null?null:consumptionQueryDTO.getEndDate().atTime(23, 59, 59, 999_999_999);
+        consumptionQueryDTO.setBeginDateTime(beginDateTime);
+        consumptionQueryDTO.setEndDateTime(endDateTime);
+        PageHelper.startPage(consumptionQueryDTO.getPage(),consumptionQueryDTO.getPageSize());Page<Consumption> page =  consumptionMapper.page(consumptionQueryDTO);
         return new PageResult<>(page.getTotal(),page.getResult());
+    }
+    /**
+     * 批量删除
+     * @param ids
+     */
+    @Override
+    @Transactional
+    public void deleteByIds(List<Long> ids){
+        consumptionMapper.deleteByIds(ids);
     }
 }

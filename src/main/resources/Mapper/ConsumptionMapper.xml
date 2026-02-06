@@ -2,12 +2,47 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zhang.Mapper.ConsumptionMapper">
-    <insert id="insert" parameterType="com.zhang.Pojo.Entity.Consumption">
-        insert into consumption(user_id,event,amount,detail,create_time)
-        values(#{userId},#{event},#{amount},#{detail},#{createTime})
-    </insert>
-    <select id="page" resultType="com.zhang.Pojo.Entity.Consumption">
-        select *
-        from consumption
+    <select id="page" resultType="com.zhang.Pojo.VO.ConsumptionVO">
+        select c.*,u.name
+        from consumption c
+        left join user u on c.user_id = u.id
+        <where>
+            <if test="userId !=null">
+                c.user_id = #{userId}
+            </if>
+            <if test="event != null">
+            and c.event like concat ('%',#{event},'%')
+            </if>
+            <if test="username != null">
+            and u.name like concat ('%',#{username},'%')
+            </if>
+            <if test="minAmount != null">
+                and c.amount &gt;= #{minAmount}
+            </if>
+            <if test="maxAmount != null">
+                and c.amount &lt;= #{maxAmount}
+            </if>
+            <if test="beginDateTime != null">
+                and c.create_time &gt;= #{beginDateTime}
+            </if>
+            <if test="endDateTime != null">
+                and c.create_time &lt;= #{endDateTime}
+            </if>
+
+        </where>
+        order by c.create_time desc
     </select>
+    <select id="selectByUserId" resultType="com.zhang.Pojo.VO.ConsumptionVO">
+        select c.*,u.name
+        from consumption c
+        left join user u on c.user_id = u.id
+        where c.user_id = #{userId}
+    </select>
+    <delete id="deleteByIds">
+        delete from consumption where id in
+        <foreach item="id" collection="ids" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </delete>
+
 </mapper>

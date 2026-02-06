@@ -12,11 +12,12 @@
                 and status = #{status}
             </if>
             <if test="beginDate != null">
-                and entry_date &gt; #{beginDate}
+                and entry_date &gt; #{beginDateTime}
             </if>
             <if test="endDate != null">
-                and entry_date &lt; #{endDate}
+                and entry_date &lt; #{endDateTime}
             </if>
+
         </where>
         order by update_time desc
 
