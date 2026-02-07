@@ -7,7 +7,6 @@ import com.zhang.Pojo.DTO.EmpQueryDTO;
 import com.zhang.Pojo.DTO.LoginDTO;
 import com.zhang.Pojo.Entity.Emp;
 import com.zhang.Pojo.Entity.PageResult;
-import com.zhang.Pojo.Entity.User;
 import com.zhang.Pojo.VO.LoginVO;
 import com.zhang.Service.EmpService;
 import com.zhang.Utils.JwtUtils;
@@ -17,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Service

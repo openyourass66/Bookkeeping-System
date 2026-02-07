@@ -14,7 +14,8 @@ import java.time.LocalDateTime;
 public class ConsumptionQueryDTO {
     private Integer page=1;
     private Integer pageSize=10;
-    private String event;
+    private Long userId;
+    private Integer event;
     private String username;
     private Double minAmount;
     private Double maxAmount;
@@ -22,7 +23,6 @@ public class ConsumptionQueryDTO {
     private LocalDate beginDate;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate endDate;
-    private Long userId;
 
     private LocalDateTime beginDateTime;
     private LocalDateTime endDateTime;

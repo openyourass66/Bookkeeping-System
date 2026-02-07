@@ -6,7 +6,6 @@ import com.zhang.Pojo.Entity.Emp;
 import com.zhang.Pojo.Entity.PageResult;
 import com.zhang.Pojo.VO.LoginVO;
 
-import java.util.List;
 
 public interface EmpService {
     /**

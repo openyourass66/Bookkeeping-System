@@ -36,4 +36,14 @@ public class ConsumptionController {
         consumptionService.save(consumption);
         return Result.success();
     }
+    /**
+     * 批量删除消费记录
+     * @return
+     */
+    @DeleteMapping("/delete")
+    public Result deleteByIds(@RequestParam List<Long> ids){
+        log.info("批量删除消费记录:{}", ids);
+        consumptionService.deleteByIds(ids);
+        return Result.success();
+    }
 }

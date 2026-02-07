@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 public class ConsumptionVO {
     private Long id;
     private Long userId;
-    private String event;
+    private Integer event;
     private Double amount;
     private String detail;
     private LocalDateTime createTime;

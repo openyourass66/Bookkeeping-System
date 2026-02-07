@@ -7,6 +7,7 @@ import com.zhang.Pojo.DTO.ConsumptionQueryDTO;
 import com.zhang.Pojo.Entity.Consumption;
 import com.zhang.Pojo.Entity.PageResult;
 import com.zhang.Service.ConsumptionService;
+import com.zhang.Utils.CurrentHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +25,7 @@ public class ConsumptionServiceImpl implements ConsumptionService {
      */
     @Override
     public void save(Consumption consumption){
+        consumption.setUserId(CurrentHolder.getCurrentId());
         consumption.setCreateTime(LocalDateTime.now());
         consumption.setUpdateTime(LocalDateTime.now());
         consumptionMapper.insert(consumption);
