@@ -1,5 +1,6 @@
 package com.zhang.Utils;
 
+import com.zhang.Properties.JwtProperties;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -7,32 +8,29 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import java.util.Date;
 import java.util.Map;
 
-public class JwtUtils {
-
-    private static String signKey = "5L+o5L+o5aSp5LiK5a6r6ZiZ77yM6JCn6JCn5Lq66Ze05pyd5aSV";
-    private static Long expire = 43200000L;
+public class JwtUtil {
 
     /**
      * 生成JWT令牌
      * @return
      */
-    public static String generateJwt(Map<String,Object> claims){
+    public static String generateJwt(JwtProperties jwtProperties,Map<String,Object> claims){
         String jwt = Jwts.builder()
                 .addClaims(claims)
-                .signWith(SignatureAlgorithm.HS256, signKey)
-                .setExpiration(new Date(System.currentTimeMillis() + expire))
+                .signWith(SignatureAlgorithm.HS256, jwtProperties.getSecretKey())
+                .setExpiration(new Date(System.currentTimeMillis() + jwtProperties.getExpire()))
                 .compact();
         return jwt;
     }
 
     /**
      * 解析JWT令牌
-     * @param jwt JWT令牌
+     * @param jwtProperties，jwt
      * @return JWT第二部分负载 payload 中存储的内容
      */
-    public static Claims parseJWT(String jwt){
+    public static Claims parseJWT(JwtProperties jwtProperties,String jwt){
         Claims claims = Jwts.parser()
-                .setSigningKey(signKey)
+                .setSigningKey(jwtProperties.getSecretKey())
                 .parseClaimsJws(jwt)
                 .getBody();
         return claims;

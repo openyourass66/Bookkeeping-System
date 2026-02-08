@@ -13,11 +13,11 @@ import org.apache.ibatis.annotations.Select;
 public interface EmpMapper {
     /**
      *  登录
-     * @param loginDTO
+     * @param username
      * @return
      */
-    @Select("select * from employee where username=#{username} and password=#{password}")
-    Emp selectByUsernameAndPAssword(LoginDTO loginDTO);
+    @Select("select * from emp where username=#{username}")
+    Emp selectByUsername(String username);
 
     /**
      * 分页查询
@@ -30,7 +30,7 @@ public interface EmpMapper {
      * 新增职工
      * @param emp
      */
-    @Insert("insert into employee(username,name,password,gender,phone,status,entry_date,create_time,update_time) " +
+    @Insert("insert into emp(username,name,password,gender,phone,status,entry_date,create_time,update_time) " +
     "values(#{username},#{name},#{password},#{gender},#{phone},#{status},#{entryDate},#{createTime},#{updateTime})")
     void insert(Emp emp);
 

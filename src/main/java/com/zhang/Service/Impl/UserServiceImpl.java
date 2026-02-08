@@ -7,8 +7,10 @@ import com.zhang.Pojo.DTO.UpdatePasswordDTO;
 import com.zhang.Pojo.DTO.LoginDTO;
 import com.zhang.Pojo.Entity.User;
 import com.zhang.Pojo.VO.LoginVO;
+import com.zhang.Properties.JwtProperties;
 import com.zhang.Service.UserService;
-import com.zhang.Utils.JwtUtils;
+import com.zhang.Utils.JwtUtil;
+import com.zhang.Utils.PasswordUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,20 +25,21 @@ public class UserServiceImpl implements UserService {
     private UserMapper userMapper;
     @Autowired
     private ConsumptionMapper consumptionMapper;
+    @Autowired
+    private JwtProperties jwtProperties;
     /**
      * 登录
      * @param loginDTO
      * @return
      */
     @Override
-    public LoginVO login(LoginDTO loginDTO){
-        User u = userMapper.selectByUsernameAndPAssword(loginDTO);
-        if(u != null){
-            log.info("用户登录成功:{}", u);
-            Map<String,Object> claims=new HashMap<>();
-            claims.put("userId",u.getId());
-            String jwt = JwtUtils.generateJwt(claims);
-            return new LoginVO(u.getId(),u.getUsername(),jwt);
+    public LoginVO login(LoginDTO loginDTO) {
+        User u = userMapper.selectByUsername(loginDTO.getUsername());
+        if (u != null && PasswordUtil.matches(loginDTO.getPassword(), u.getPassword())) {
+            Map<String, Object> claims = new HashMap<>();
+            claims.put("userId", u.getId());
+            String jwt = JwtUtil.generateJwt(jwtProperties,claims);
+            return new LoginVO(u.getId(), u.getUsername(), jwt);
         }
         return null;
     }
@@ -49,6 +52,8 @@ public class UserServiceImpl implements UserService {
         if(u.getSelfDescription()== null){
             u.setSelfDescription("这个人很懒，什么都没写");
         }
+        // 加密密码
+        u.setPassword(PasswordUtil.encodePassword(u.getPassword()));
         u.setCreateTime(LocalDateTime.now());
         u.setUpdateTime(LocalDateTime.now());
         userMapper.insert(u);

@@ -8,8 +8,10 @@ import com.zhang.Pojo.DTO.LoginDTO;
 import com.zhang.Pojo.Entity.Emp;
 import com.zhang.Pojo.Entity.PageResult;
 import com.zhang.Pojo.VO.LoginVO;
+import com.zhang.Properties.JwtProperties;
 import com.zhang.Service.EmpService;
-import com.zhang.Utils.JwtUtils;
+import com.zhang.Utils.JwtUtil;
+import com.zhang.Utils.PasswordUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +24,8 @@ import java.util.Map;
 public class EmpServiceImpl implements EmpService {
     @Autowired
     private EmpMapper empMapper;
+    @Autowired
+    private JwtProperties jwtProperties;
     /**
      * 登录
      * @param loginDTO
@@ -29,12 +33,12 @@ public class EmpServiceImpl implements EmpService {
      */
     @Override
     public LoginVO login(LoginDTO loginDTO){
-        Emp emp=empMapper.selectByUsernameAndPAssword(loginDTO);
-        if(emp != null){
+        Emp emp=empMapper.selectByUsername(loginDTO.getUsername());
+        if(emp != null && PasswordUtil.matches(loginDTO.getPassword(),emp.getPassword())){
             //生成jwt令牌
             Map<String,Object> claims=new HashMap<>();
             claims.put("empId",emp.getId());
-            String jwt = JwtUtils.generateJwt(claims);
+            String jwt = JwtUtil.generateJwt(jwtProperties,claims);
             return new LoginVO(emp.getId(),emp.getUsername(),jwt);
         }
         return null;
@@ -55,6 +59,7 @@ public class EmpServiceImpl implements EmpService {
      */
     @Override
     public void save(Emp emp){
+        emp.setPassword(PasswordUtil.encodePassword(emp.getPassword()));
         emp.setCreateTime(LocalDateTime.now());
         emp.setUpdateTime(LocalDateTime.now());
         empMapper.insert(emp);

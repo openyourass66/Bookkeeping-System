@@ -7,14 +7,12 @@ import com.zhang.Pojo.Entity.User;
 import com.zhang.Pojo.VO.LoginVO;
 import com.zhang.Service.UserService;
 import com.zhang.Utils.CurrentHolder;
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.ibatis.annotations.Delete;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
-@RestController
+@RestController("UserUserController")
 @RequestMapping("/user/user")
 public class UserController {
     @Autowired

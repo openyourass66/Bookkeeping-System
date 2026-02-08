@@ -18,11 +18,11 @@ public interface UserMapper {
     void insert(User u);
     /**
      * 根据用户名和密码查询用户
-     * @param loginDTO
+     * @param username
      * @return
      */
-    @Select("select * from user where username=#{username} and password=#{password}")
-    User selectByUsernameAndPAssword(LoginDTO loginDTO);
+    @Select("select * from user where username=#{username}")
+    User selectByUsername(String username);
 
     /**
      * 根据id查询用户

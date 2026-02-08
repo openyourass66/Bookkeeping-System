@@ -19,6 +19,7 @@ import java.util.List;
 public class ConsumptionServiceImpl implements ConsumptionService {
     @Autowired
     private ConsumptionMapper consumptionMapper;
+
     /**
      * 保存记录
      * @param consumption
