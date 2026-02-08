@@ -19,6 +19,6 @@ logging:
   level:
     com:
       zhang:
-        Mapper: debug
+        Mapper: info
         Service: info
         Controller: info

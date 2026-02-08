@@ -33,7 +33,6 @@ public class EmpServiceImpl implements EmpService {
         if(emp != null){
             //生成jwt令牌
             Map<String,Object> claims=new HashMap<>();
-            claims.put("type","emp");
             claims.put("empId",emp.getId());
             String jwt = JwtUtils.generateJwt(claims);
             return new LoginVO(emp.getId(),emp.getUsername(),jwt);

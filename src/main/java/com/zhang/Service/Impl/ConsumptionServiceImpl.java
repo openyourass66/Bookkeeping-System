@@ -53,4 +53,15 @@ public class ConsumptionServiceImpl implements ConsumptionService {
     public void deleteByIds(List<Long> ids){
         consumptionMapper.deleteByIds(ids);
     }
+
+    /**
+     * 修改
+     * @param consumption
+     */
+    @Override
+    public void update(Consumption consumption){
+        consumption.setUpdateTime(LocalDateTime.now());
+        consumptionMapper.update(consumption);
+    }
+
 }

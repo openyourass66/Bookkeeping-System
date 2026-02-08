@@ -32,17 +32,32 @@
         </where>
         order by c.create_time desc
     </select>
-    <select id="selectByUserId" resultType="com.zhang.Pojo.VO.ConsumptionVO">
-        select c.*,u.name
-        from consumption c
-        left join user u on c.user_id = u.id
-        where c.user_id = #{userId}
-    </select>
     <delete id="deleteByIds">
         delete from consumption where id in
         <foreach item="id" collection="ids" separator="," open="(" close=")">
             #{id}
         </foreach>
     </delete>
+    <update id="update">
+        update consumption
+        <set>
+            <if test="userId != null">
+                user_id = #{userId},
+            </if>
+            <if test="event != null">
+                event = #{event},
+            </if>
+            <if test="amount != null">
+                amount = #{amount},
+            </if>
+            <if test="detail != null">
+                detail = #{detail},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
 
 </mapper>

@@ -26,4 +26,11 @@ public interface ConsumptionService {
      * @param ids
      */
     void deleteByIds(List<Long> ids);
+
+    /**
+     * 修改记录
+     * @param consumption
+     */
+    void update(Consumption consumption);
+
 }

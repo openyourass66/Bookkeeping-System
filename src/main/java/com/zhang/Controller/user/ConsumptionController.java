@@ -23,6 +23,9 @@ public class ConsumptionController {
     @GetMapping("/page")
     public Result page(ConsumptionQueryDTO consumptionQueryDTO){
         log.info("用户查询：{}",consumptionQueryDTO);
+        if(consumptionQueryDTO.getUserId()==null){
+            return Result.error("用户id不能为空");
+        }
         PageResult<Consumption> list =  consumptionService.page(consumptionQueryDTO);
         return Result.success(list);
     }
@@ -37,6 +40,16 @@ public class ConsumptionController {
         return Result.success();
     }
     /**
+     * 修改记录
+     * @return
+     */
+    @PutMapping("/update")
+    public Result update(@RequestBody Consumption consumption){
+        log.info("修改记录:{}", consumption);
+        consumptionService.update(consumption);
+        return Result.success();
+    }
+    /**
      * 批量删除消费记录
      * @return
      */
@@ -46,4 +59,5 @@ public class ConsumptionController {
         consumptionService.deleteByIds(ids);
         return Result.success();
     }
+
 }

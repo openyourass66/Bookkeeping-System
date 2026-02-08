@@ -15,8 +15,9 @@ public class User {
     String password;
     String name;
     Integer gender;
+    Integer age;
     String phone;
-    String self_description;
-    LocalDateTime create_time;
-    LocalDateTime update_time;
+    String selfDescription;
+    LocalDateTime createTime;
+    LocalDateTime updateTime;
 }

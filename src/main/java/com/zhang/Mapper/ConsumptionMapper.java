@@ -6,6 +6,7 @@ import com.zhang.Pojo.Entity.Consumption;
 import com.zhang.Pojo.Entity.PageResult;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 
@@ -40,4 +41,18 @@ public interface ConsumptionMapper {
      * @param ids
      */
     void deleteByIds(List ids);
+
+    /**
+     *  修改
+     * @param consumption
+     */
+    void update(Consumption consumption);
+
+    /**
+     *  通过用户id查询数量
+     * @param userId
+     * @return
+     */
+    @Select("select count(*) from consumption where user_id=#{userId}")
+    Integer countByUserId(Long userId);
 }
