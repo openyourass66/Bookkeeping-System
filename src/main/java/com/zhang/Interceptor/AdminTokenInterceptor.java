@@ -24,12 +24,15 @@ public class AdminTokenInterceptor implements HandlerInterceptor {
             return false;
         }
         try {
-            Claims claims = JwtUtil.parseJWT(jwtProperties,token);
-            if (claims.get("empId") != null) {
-                log.info("职员id：{}", claims.get("empId"));
-                Long empId = Long.valueOf(claims.get("empId").toString());
-                CurrentHolder.setCurrentId(empId);
+            Claims claims = JwtUtil.parseJWT(jwtProperties, token);
+            // 校验是否为管理员 token（必须包含 empId）
+            if (claims.get("empId") == null) {
+                response.setStatus(403);
+                log.warn("非管理员尝试访问管理端接口");
+                return false;
             }
+            Long empId = Long.valueOf(claims.get("empId").toString());
+            CurrentHolder.setCurrentId(empId);
         } catch (Exception e) {
             log.error("令牌解析失败：{}", e.getMessage());
             response.setStatus(401);
@@ -37,4 +40,5 @@ public class AdminTokenInterceptor implements HandlerInterceptor {
         }
         return true;
     }
+
 }

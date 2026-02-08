@@ -24,12 +24,15 @@ public class UserTokenInterceptor implements HandlerInterceptor {
             return false;
         }
         try {
-            Claims claims = JwtUtil.parseJWT(jwtProperties,token);
-            if (claims.get("userId") != null) {
-                log.info("用户id：{}", claims.get("userId"));
-                Long userId = Long.valueOf(claims.get("userId").toString());
-                CurrentHolder.setCurrentId(userId);
+            Claims claims = JwtUtil.parseJWT(jwtProperties, token);
+            // 校验是否为用户 token（必须包含 userId）
+            if (claims.get("userId") == null) {
+                response.setStatus(403);
+                log.warn("非用户尝试访问用户端接口");
+                return false;
             }
+            Long userId = Long.valueOf(claims.get("userId").toString());
+            CurrentHolder.setCurrentId(userId);
         } catch (Exception e) {
             response.setStatus(401);
             return false;
