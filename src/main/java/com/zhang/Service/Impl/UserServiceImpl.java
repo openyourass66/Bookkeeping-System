@@ -94,7 +94,7 @@ public class UserServiceImpl implements UserService {
             throw new BusinessException("用户不存在");
         }
 
-        if (!u.getPassword().equals(updatePasswordDTO.getOldPassword())) {
+        if (!PasswordUtil.matches(updatePasswordDTO.getOldPassword(), u.getPassword())) {
             throw new BusinessException("旧密码错误");
         }
 

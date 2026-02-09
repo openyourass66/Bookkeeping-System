@@ -10,14 +10,14 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class User {
-    Long id;
-    String username;
-    String password;
-    String name;
-    Integer gender;
-    Integer age;
-    String phone;
-    String selfDescription;
-    LocalDateTime createTime;
-    LocalDateTime updateTime;
+    private Long id;
+    private String username;
+    private String password;
+    private String name;
+    private Integer gender;
+    private Integer age;
+    private String phone;
+    private  String selfDescription;
+    private  LocalDateTime createTime;
+    private  LocalDateTime updateTime;
 }

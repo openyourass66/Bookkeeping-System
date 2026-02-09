@@ -16,20 +16,60 @@
         from user
         group by gender
     </select>
-    <select id="eventReport" resultType="java.util.Map">
-        select
-            (case when event=1 then '饮食'
-                  when event=2 then '购物'
-                  when event=3 then '交通'
-                  when event=4 then '医疗'
-                  when event=5 then '娱乐'
-                  else '其他' end) as event,
-            count(*) as count
-        from consumption
-        group by event
+    <select id="CountConumptionReport" resultType="java.lang.Integer">
+        select count(*) from consumption
         <where>
             <if test="userId !=null">
-                user_id=#{userId}
+                and user_id= #{userId}
+            </if>
+            <if test="beginDateTime !=null">
+                and create_time &gt;= #{beginDateTime}
+            </if>
+            <if test="endDateTime !=null">
+                and create_time &lt;= #{endDateTime}
+            </if>
+        </where>
+    </select>
+    <select id="CountConumptionTypeReport" resultType="java.lang.Integer">
+        select  count(*)
+        from consumption
+        <where>
+            <if test="userId !=null">
+                and user_id= #{userId}
+            </if>
+            <if test="event !=null">
+                and event= #{event}
+            </if>
+            <if test="beginDateTime !=null">
+                and create_time &gt;= #{beginDateTime}
+            </if>
+            <if test="endDateTime !=null">
+                and create_time &lt;= #{endDateTime}
+            </if>
+        </where>
+    </select>
+    <select id="totalConsumtionReport" resultType="java.lang.Double">
+        select sum(amount) from consumption
+        <where>
+            <if test="userId !=null">
+                and user_id= #{userId}
+            </if>
+            <if test="beginDateTime !=null">
+                and create_time &gt;= #{beginDateTime}
+            </if>
+            <if test="endDateTime !=null">
+                and create_time &lt;= #{endDateTime}
+            </if>
+        </where>
+    </select>
+    <select id="newUserReport" resultType="java.lang.Integer">
+        select count(*) from user
+        <where>
+            <if test="beginDateTime !=null">
+                and create_time &gt;= #{beginDateTime}
+            </if>
+            <if test="endDateTime !=null">
+                and create_time &lt;= #{endDateTime}
             </if>
         </where>
     </select>

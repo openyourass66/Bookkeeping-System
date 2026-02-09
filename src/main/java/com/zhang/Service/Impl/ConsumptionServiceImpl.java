@@ -8,6 +8,7 @@ import com.zhang.Pojo.Entity.Consumption;
 import com.zhang.Pojo.Entity.PageResult;
 import com.zhang.Service.ConsumptionService;
 import com.zhang.Utils.CurrentHolder;
+import com.zhang.Utils.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,10 +39,8 @@ public class ConsumptionServiceImpl implements ConsumptionService {
      */
     @Override
     public PageResult<Consumption> page(ConsumptionQueryDTO  consumptionQueryDTO){
-        LocalDateTime beginDateTime = consumptionQueryDTO.getBeginDate()==null?null:consumptionQueryDTO.getBeginDate().atStartOfDay();
-        LocalDateTime endDateTime = consumptionQueryDTO.getEndDate()==null?null:consumptionQueryDTO.getEndDate().atTime(23, 59, 59, 999_999_999);
-        consumptionQueryDTO.setBeginDateTime(beginDateTime);
-        consumptionQueryDTO.setEndDateTime(endDateTime);
+        consumptionQueryDTO.setBeginDateTime(DateUtil.toStartOfDay(consumptionQueryDTO.getBeginDate()));
+        consumptionQueryDTO.setEndDateTime(DateUtil.toEndOfDay(consumptionQueryDTO.getEndDate()));
         PageHelper.startPage(consumptionQueryDTO.getPage(),consumptionQueryDTO.getPageSize());
         Page<Consumption> page =  consumptionMapper.page(consumptionQueryDTO);
         return new PageResult<>(page.getTotal(),page.getResult());
@@ -51,7 +50,7 @@ public class ConsumptionServiceImpl implements ConsumptionService {
      * @param ids
      */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void deleteByIds(List<Long> ids){
         consumptionMapper.deleteByIds(ids);
     }
