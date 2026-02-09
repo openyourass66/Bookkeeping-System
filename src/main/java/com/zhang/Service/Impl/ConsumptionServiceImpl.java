@@ -42,7 +42,8 @@ public class ConsumptionServiceImpl implements ConsumptionService {
         LocalDateTime endDateTime = consumptionQueryDTO.getEndDate()==null?null:consumptionQueryDTO.getEndDate().atTime(23, 59, 59, 999_999_999);
         consumptionQueryDTO.setBeginDateTime(beginDateTime);
         consumptionQueryDTO.setEndDateTime(endDateTime);
-        PageHelper.startPage(consumptionQueryDTO.getPage(),consumptionQueryDTO.getPageSize());Page<Consumption> page =  consumptionMapper.page(consumptionQueryDTO);
+        PageHelper.startPage(consumptionQueryDTO.getPage(),consumptionQueryDTO.getPageSize());
+        Page<Consumption> page =  consumptionMapper.page(consumptionQueryDTO);
         return new PageResult<>(page.getTotal(),page.getResult());
     }
     /**

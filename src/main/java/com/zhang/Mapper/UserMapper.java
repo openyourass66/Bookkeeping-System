@@ -1,6 +1,8 @@
 package com.zhang.Mapper;
 
+import com.github.pagehelper.Page;
 import com.zhang.Pojo.DTO.LoginDTO;
+import com.zhang.Pojo.DTO.UserQueryDTO;
 import com.zhang.Pojo.Entity.User;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
@@ -45,4 +47,10 @@ public interface UserMapper {
     @Delete("delete from user where id=#{id}")
     void deleteById(Long id);
 
+    /**
+     * 分页查询
+     * @param userQueryDTO
+     * @return
+     */
+    Page<User> page(UserQueryDTO userQueryDTO);
 }

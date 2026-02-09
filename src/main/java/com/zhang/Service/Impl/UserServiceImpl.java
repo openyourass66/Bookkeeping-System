@@ -1,10 +1,14 @@
 package com.zhang.Service.Impl;
 
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.zhang.Exception.BusinessException;
 import com.zhang.Mapper.ConsumptionMapper;
 import com.zhang.Mapper.UserMapper;
 import com.zhang.Pojo.DTO.UpdatePasswordDTO;
 import com.zhang.Pojo.DTO.LoginDTO;
+import com.zhang.Pojo.DTO.UserQueryDTO;
+import com.zhang.Pojo.Entity.PageResult;
 import com.zhang.Pojo.Entity.User;
 import com.zhang.Pojo.VO.LoginVO;
 import com.zhang.Properties.JwtProperties;
@@ -27,6 +31,21 @@ public class UserServiceImpl implements UserService {
     private ConsumptionMapper consumptionMapper;
     @Autowired
     private JwtProperties jwtProperties;
+    /**
+     * 分页查询
+     * @param userQueryDTO
+     * @return
+     */
+    @Override
+    public PageResult<User> page(UserQueryDTO userQueryDTO){
+        LocalDateTime beginDateTime = userQueryDTO.getBeginDate()==null?null:userQueryDTO.getBeginDate().atStartOfDay();
+        LocalDateTime endDateTime = userQueryDTO.getEndDate()==null?null:userQueryDTO.getEndDate().atTime(23, 59, 59, 999_999_999);
+        userQueryDTO.setBeginDateTime(beginDateTime);
+        userQueryDTO.setEndDateTime(endDateTime);
+        PageHelper.startPage(userQueryDTO.getPage(),userQueryDTO.getPageSize());
+        Page<User> page = userMapper.page(userQueryDTO);
+        return new PageResult<>(page.getTotal(),page.getResult());
+    }
     /**
      * 登录
      * @param loginDTO
@@ -109,7 +128,7 @@ public class UserServiceImpl implements UserService {
     public void deleteById(Long id){
         Integer count = consumptionMapper.countByUserId(id);
         if(count > 0){
-            throw new RuntimeException("该用户有消费记录，不能删除");
+            throw new BusinessException("该用户有消费记录，不能删除");
         }
         userMapper.deleteById(id);
     }

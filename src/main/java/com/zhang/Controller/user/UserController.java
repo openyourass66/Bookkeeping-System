@@ -17,6 +17,11 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
     @Autowired
     private UserService userService;
+    /**
+     * 用户登录
+     * @param loginDTO
+     * @return
+     */
     @PostMapping("/login")
     public Result login(@RequestBody LoginDTO loginDTO) {
         log.info("用户登录，用户信息：{}", loginDTO);

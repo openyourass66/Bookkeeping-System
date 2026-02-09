@@ -2,10 +2,18 @@ package com.zhang.Service;
 
 import com.zhang.Pojo.DTO.LoginDTO;
 import com.zhang.Pojo.DTO.UpdatePasswordDTO;
+import com.zhang.Pojo.DTO.UserQueryDTO;
+import com.zhang.Pojo.Entity.PageResult;
 import com.zhang.Pojo.Entity.User;
 import com.zhang.Pojo.VO.LoginVO;
 
 public interface UserService {
+    /**
+     * 分页查询
+     * @param userQueryDTO
+     * @return
+     */
+    PageResult<User> page(UserQueryDTO userQueryDTO);
     /**
      * 登录
      * @param loginDTO
@@ -41,6 +49,7 @@ public interface UserService {
      * @param id
      */
     void deleteById(Long id);
+
 
 
 }
