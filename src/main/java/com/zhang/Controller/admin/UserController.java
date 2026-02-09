@@ -4,6 +4,7 @@ import com.zhang.Pojo.DTO.UserQueryDTO;
 import com.zhang.Pojo.Entity.PageResult;
 import com.zhang.Pojo.Entity.Result;
 import com.zhang.Pojo.Entity.User;
+import com.zhang.Pojo.VO.UserVO;
 import com.zhang.Service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,7 @@ public class UserController {
     @GetMapping("/page")
     public Result page(UserQueryDTO userQueryDTO){
         log.info("分页查询用户信息");
-        PageResult<User> list = userService.page(userQueryDTO);
+        PageResult<UserVO> list = userService.page(userQueryDTO);
         return Result.success(list);
     }
     /**

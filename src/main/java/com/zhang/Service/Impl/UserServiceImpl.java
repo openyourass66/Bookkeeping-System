@@ -11,6 +11,7 @@ import com.zhang.Pojo.DTO.UserQueryDTO;
 import com.zhang.Pojo.Entity.PageResult;
 import com.zhang.Pojo.Entity.User;
 import com.zhang.Pojo.VO.LoginVO;
+import com.zhang.Pojo.VO.UserVO;
 import com.zhang.Properties.JwtProperties;
 import com.zhang.Service.UserService;
 import com.zhang.Utils.JwtUtil;
@@ -37,13 +38,13 @@ public class UserServiceImpl implements UserService {
      * @return
      */
     @Override
-    public PageResult<User> page(UserQueryDTO userQueryDTO){
+    public PageResult<UserVO> page(UserQueryDTO userQueryDTO){
         LocalDateTime beginDateTime = userQueryDTO.getBeginDate()==null?null:userQueryDTO.getBeginDate().atStartOfDay();
         LocalDateTime endDateTime = userQueryDTO.getEndDate()==null?null:userQueryDTO.getEndDate().atTime(23, 59, 59, 999_999_999);
         userQueryDTO.setBeginDateTime(beginDateTime);
         userQueryDTO.setEndDateTime(endDateTime);
         PageHelper.startPage(userQueryDTO.getPage(),userQueryDTO.getPageSize());
-        Page<User> page = userMapper.page(userQueryDTO);
+        Page<UserVO> page = userMapper.page(userQueryDTO);
         return new PageResult<>(page.getTotal(),page.getResult());
     }
     /**

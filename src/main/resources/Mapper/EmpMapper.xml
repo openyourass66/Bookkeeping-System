@@ -2,8 +2,8 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zhang.Mapper.EmpMapper">
-    <select id="page" resultType="com.zhang.Pojo.Entity.Emp">
-        select * from emp
+    <select id="page" resultType="com.zhang.Pojo.VO.EmpVO">
+        select id,username,name,gender,age,phone,status,entry_date,create_time,update_time from emp
         <where>
             <if test="name != null">
                 and name like concat('%',#{name},'%')

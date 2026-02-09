@@ -7,6 +7,7 @@ import com.zhang.Pojo.DTO.EmpQueryDTO;
 import com.zhang.Pojo.DTO.LoginDTO;
 import com.zhang.Pojo.Entity.Emp;
 import com.zhang.Pojo.Entity.PageResult;
+import com.zhang.Pojo.VO.EmpVO;
 import com.zhang.Pojo.VO.LoginVO;
 import com.zhang.Properties.JwtProperties;
 import com.zhang.Service.EmpService;
@@ -48,9 +49,9 @@ public class EmpServiceImpl implements EmpService {
      * @param empQueryDTO
      * @return
      */
-    public PageResult<Emp> page(EmpQueryDTO  empQueryDTO){
+    public PageResult<EmpVO> page(EmpQueryDTO  empQueryDTO){
         PageHelper.startPage(empQueryDTO.getPage(),empQueryDTO.getPageSize());
-        Page<Emp> page =  empMapper.page(empQueryDTO);
+        Page<EmpVO> page =  empMapper.page(empQueryDTO);
         return new PageResult<>(page.getTotal(),page.getResult());
     }
     /**

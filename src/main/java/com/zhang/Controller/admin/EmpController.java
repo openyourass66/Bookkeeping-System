@@ -5,6 +5,7 @@ import com.zhang.Pojo.DTO.LoginDTO;
 import com.zhang.Pojo.Entity.Emp;
 import com.zhang.Pojo.Entity.PageResult;
 import com.zhang.Pojo.Entity.Result;
+import com.zhang.Pojo.VO.EmpVO;
 import com.zhang.Pojo.VO.LoginVO;
 import com.zhang.Service.EmpService;
 import com.zhang.Utils.CurrentHolder;
@@ -40,7 +41,7 @@ public class EmpController {
     @GetMapping("/page")
     public Result page(EmpQueryDTO  empQueryDTO){
         log.info("分页查询用户信息：{}", empQueryDTO);
-        PageResult<Emp> list = empService.page(empQueryDTO);
+        PageResult<EmpVO> list = empService.page(empQueryDTO);
         return Result.success(list);
     }
     @GetMapping("/logout")

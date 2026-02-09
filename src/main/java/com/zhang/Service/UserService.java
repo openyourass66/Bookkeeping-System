@@ -6,6 +6,7 @@ import com.zhang.Pojo.DTO.UserQueryDTO;
 import com.zhang.Pojo.Entity.PageResult;
 import com.zhang.Pojo.Entity.User;
 import com.zhang.Pojo.VO.LoginVO;
+import com.zhang.Pojo.VO.UserVO;
 
 public interface UserService {
     /**
@@ -13,7 +14,7 @@ public interface UserService {
      * @param userQueryDTO
      * @return
      */
-    PageResult<User> page(UserQueryDTO userQueryDTO);
+    PageResult<UserVO> page(UserQueryDTO userQueryDTO);
     /**
      * 登录
      * @param loginDTO

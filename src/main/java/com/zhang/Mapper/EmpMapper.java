@@ -4,6 +4,7 @@ import com.github.pagehelper.Page;
 import com.zhang.Pojo.DTO.EmpQueryDTO;
 import com.zhang.Pojo.DTO.LoginDTO;
 import com.zhang.Pojo.Entity.Emp;
+import com.zhang.Pojo.VO.EmpVO;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
@@ -24,7 +25,7 @@ public interface EmpMapper {
      * @param empQueryDTO
      * @return
      */
-    Page<Emp> page(EmpQueryDTO empQueryDTO);
+    Page<EmpVO> page(EmpQueryDTO empQueryDTO);
 
     /**
      * 新增职工

@@ -4,6 +4,7 @@ import com.zhang.Pojo.DTO.EmpQueryDTO;
 import com.zhang.Pojo.DTO.LoginDTO;
 import com.zhang.Pojo.Entity.Emp;
 import com.zhang.Pojo.Entity.PageResult;
+import com.zhang.Pojo.VO.EmpVO;
 import com.zhang.Pojo.VO.LoginVO;
 
 
@@ -20,7 +21,7 @@ public interface EmpService {
      * @param empQueryDTO
      * @return
      */
-    PageResult<Emp> page(EmpQueryDTO  empQueryDTO);
+    PageResult<EmpVO> page(EmpQueryDTO  empQueryDTO);
     /**
      *  保存
      * @param emp

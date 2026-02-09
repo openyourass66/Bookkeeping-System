@@ -4,6 +4,7 @@ import com.github.pagehelper.Page;
 import com.zhang.Pojo.DTO.LoginDTO;
 import com.zhang.Pojo.DTO.UserQueryDTO;
 import com.zhang.Pojo.Entity.User;
+import com.zhang.Pojo.VO.UserVO;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
@@ -52,5 +53,5 @@ public interface UserMapper {
      * @param userQueryDTO
      * @return
      */
-    Page<User> page(UserQueryDTO userQueryDTO);
+    Page<UserVO> page(UserQueryDTO userQueryDTO);
 }
