@@ -80,4 +80,20 @@ public class UserController {
         }
     }
 
+    /**
+     * 获取用户信息
+     * @return
+     */
+    @GetMapping("/info")
+    public Result getUserInfo() {
+        try {
+            Long userId = com.zhang.Utils.CurrentHolder.getCurrentId();
+            log.info("获取用户信息，用户ID：{}", userId);
+            User user = userService.selectById(userId);
+            return Result.success(user);
+        } catch (RuntimeException e) {
+            return Result.error(e.getMessage());
+        }
+    }
+
 }

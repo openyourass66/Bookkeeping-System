@@ -17,6 +17,7 @@ import java.util.Map;
 @RestController("AdminReportController")
 @RequestMapping("/admin/report")
 @Slf4j
+@CrossOrigin
 public class ReportController {
     @Autowired
     private ReportService reportService;
@@ -46,7 +47,7 @@ public class ReportController {
      * @return
      */
     @GetMapping("/CountConumptionReport")
-    public Result CountConumptionReport(@RequestBody ConsumptionReportDTO consumptionReportDTO){
+    public Result CountConumptionReport( ConsumptionReportDTO consumptionReportDTO){
         log.info("消费事件统计");
         CountConsumptionReportVO countConsumptionReportVO = reportService.CountConumptionReport(consumptionReportDTO);
         return Result.success(countConsumptionReportVO);
@@ -58,7 +59,7 @@ public class ReportController {
      * @return
      */
     @GetMapping("/CountConumptionTypeReport")
-    public Result CountConumptionTypeReport(@RequestBody ConsumptionReportDTO consumptionReportDTO){
+    public Result CountConumptionTypeReport( ConsumptionReportDTO consumptionReportDTO){
         log.info("消费事件类型统计");
         CountConsumptionTypeReportVO countConsumptionTypeReportVO = reportService.CountConumptionTypeReport(consumptionReportDTO);
         return Result.success(countConsumptionTypeReportVO);
@@ -70,9 +71,31 @@ public class ReportController {
      * @return
      */
     @GetMapping("newUserReport")
-    public Result newUserReport(@RequestBody UserReportDTO userReportDTO){
+    public Result newUserReport(UserReportDTO userReportDTO){
         log.info("新增用户统计");
         UserReportVO userReportVO = reportService.newUserReport(userReportDTO);
         return Result.success(userReportVO);
+    }
+
+    /**
+     * 总消费统计
+     * @param consumptionReportDTO
+     * @return
+     */
+    @GetMapping("totalConsumtionReport")
+    public Result totalConsumtionReport(ConsumptionReportDTO consumptionReportDTO){
+        log.info("总消费统计");
+        return Result.success(reportService.totalConsumtionReport(consumptionReportDTO));
+    }
+
+    /**
+     * 平均消费统计
+     * @param consumptionReportDTO
+     * @return
+     */
+    @GetMapping("averageConsumtionReport")
+    public Result averageConsumtionReport(ConsumptionReportDTO consumptionReportDTO){
+        log.info("平均消费统计");
+        return Result.success(reportService.averageConsumtionReport(consumptionReportDTO));
     }
 }

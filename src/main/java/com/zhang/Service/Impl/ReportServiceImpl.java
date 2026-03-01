@@ -100,7 +100,7 @@ public class ReportServiceImpl implements ReportService {
             consumptionReportDTO.setBeginDateTime(DateUtil.toStartOfDay(date));
             consumptionReportDTO.setEndDateTime(DateUtil.toEndOfDay(date));
             Double count = reportMapper.totalConsumtionReport(consumptionReportDTO);
-            countList.add(count);
+            countList.add(count != null ? count : 0.0);
         }
        return new TotalConsumptionReportVO(dateList,countList);
     }
@@ -119,6 +119,9 @@ public class ReportServiceImpl implements ReportService {
         consumptionReportDTO.setBeginDateTime(DateUtil.toStartOfDay(beginDate));
         consumptionReportDTO.setEndDateTime(DateUtil.toEndOfDay(endDate));
         Double total=reportMapper.totalConsumtionReport(consumptionReportDTO);
+        if (total == null) {
+            return 0.0;
+        }
         return total/days;
 
     }

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/admin/emp")
 @Slf4j
+@CrossOrigin
 public class EmpController {
     @Autowired
     private EmpService empService;

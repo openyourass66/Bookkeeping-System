@@ -26,7 +26,7 @@ public class ReportController {
      * @return
      */
     @GetMapping("/CountConumptionReport")
-    public Result CountConumptionReport(@RequestBody ConsumptionReportDTO consumptionReportDTO){
+    public Result CountConumptionReport( ConsumptionReportDTO consumptionReportDTO){
         log.info("消费事件统计");
         CountConsumptionReportVO countConsumptionReportVO = reportService.CountConumptionReport(consumptionReportDTO);
         return Result.success(countConsumptionReportVO);
@@ -38,7 +38,7 @@ public class ReportController {
      * @return
      */
     @GetMapping("/CountConumptionTypeReport")
-    public Result CountConumptionTypeReport(@RequestBody ConsumptionReportDTO consumptionReportDTO){
+    public Result CountConumptionTypeReport( ConsumptionReportDTO consumptionReportDTO){
         log.info("消费事件类型统计");
         CountConsumptionTypeReportVO countConsumptionTypeReportVO = reportService.CountConumptionTypeReport(consumptionReportDTO);
         return Result.success(countConsumptionTypeReportVO);
@@ -49,7 +49,7 @@ public class ReportController {
      * @return
      */
     @GetMapping("/totalConsumtionReport")
-    public Result totalConsumtionReport(@RequestBody ConsumptionReportDTO consumptionReportDTO){
+    public Result totalConsumtionReport( ConsumptionReportDTO consumptionReportDTO){
         log.info("消费统计");
         consumptionReportDTO.setUserId(CurrentHolder.getCurrentId());
         TotalConsumptionReportVO totalConsumptionReportVO = reportService.totalConsumtionReport(consumptionReportDTO);
@@ -62,7 +62,7 @@ public class ReportController {
      * @return
      */
     @GetMapping("/averageConsumtionReport")
-    public Result averageConsumtionReport(@RequestBody ConsumptionReportDTO consumptionReportDTO){
+    public Result averageConsumtionReport(ConsumptionReportDTO consumptionReportDTO){
         log.info("平均消费统计");
         consumptionReportDTO.setUserId(CurrentHolder.getCurrentId());
         Double averageConsumtionReport = reportService.averageConsumtionReport(consumptionReportDTO);

@@ -14,6 +14,7 @@ import java.util.List;
 @Slf4j
 @RestController("EmpConsumptionController")
 @RequestMapping("/admin/consumption")
+@CrossOrigin
 public class ConsumptionController {
     @Autowired
     private ConsumptionService consumptionService;

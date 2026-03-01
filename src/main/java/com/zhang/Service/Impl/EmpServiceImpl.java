@@ -2,6 +2,7 @@ package com.zhang.Service.Impl;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.zhang.Exception.BusinessException;
 import com.zhang.Mapper.EmpMapper;
 import com.zhang.Pojo.DTO.EmpQueryDTO;
 import com.zhang.Pojo.DTO.LoginDTO;
@@ -35,6 +36,9 @@ public class EmpServiceImpl implements EmpService {
     @Override
     public LoginVO login(LoginDTO loginDTO){
         Emp emp=empMapper.selectByUsername(loginDTO.getUsername());
+        if(emp.getStatus()==0){
+            throw new BusinessException("该用户已被禁用");
+        }
         if(emp != null && PasswordUtil.matches(loginDTO.getPassword(),emp.getPassword())){
             //生成jwt令牌
             Map<String,Object> claims=new HashMap<>();

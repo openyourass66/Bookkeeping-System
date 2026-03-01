@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController("AdminUserController")
 @RequestMapping("/admin/user")
 @Slf4j
+@CrossOrigin
 public class UserController {
     @Autowired
     private UserService userService;
