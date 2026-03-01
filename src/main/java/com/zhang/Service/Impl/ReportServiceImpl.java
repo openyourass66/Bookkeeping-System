@@ -9,6 +9,8 @@ import com.zhang.Pojo.VO.TotalConsumptionReportVO;
 import com.zhang.Pojo.VO.UserReportVO;
 import com.zhang.Service.ReportService;
 import com.zhang.Utils.DateUtil;
+import com.zhang.Utils.RedisUtil;
+import com.alibaba.fastjson.JSON;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,13 +24,30 @@ import java.util.Map;
 public class ReportServiceImpl implements ReportService {
     @Autowired
     private ReportMapper reportMapper;
+    @Autowired
+    private RedisUtil redisUtil;
     /**
      * 年龄统计
      * @return
      */
     @Override
     public List<Map<String, Integer>> ageReport() {
-        return reportMapper.ageReport();
+        // 生成缓存键
+        String cacheKey = "report:age";
+        
+        // 先从缓存中获取
+        Object cachedData = redisUtil.get(cacheKey);
+        if (cachedData != null) {
+            return JSON.parseObject(cachedData.toString(), List.class);
+        }
+        
+        // 从数据库查询
+        List<Map<String, Integer>> result = reportMapper.ageReport();
+        
+        // 存入缓存，设置过期时间为1小时
+        redisUtil.set(cacheKey, JSON.toJSONString(result), 3600);
+        
+        return result;
     }
     /**
      * 性别统计
@@ -36,7 +55,22 @@ public class ReportServiceImpl implements ReportService {
      */
     @Override
     public List<Map<String, Integer>> genderReport() {
-        return reportMapper.genderReport();
+        // 生成缓存键
+        String cacheKey = "report:gender";
+        
+        // 先从缓存中获取
+        Object cachedData = redisUtil.get(cacheKey);
+        if (cachedData != null) {
+            return JSON.parseObject(cachedData.toString(), List.class);
+        }
+        
+        // 从数据库查询
+        List<Map<String, Integer>> result = reportMapper.genderReport();
+        
+        // 存入缓存，设置过期时间为1小时
+        redisUtil.set(cacheKey, JSON.toJSONString(result), 3600);
+        
+        return result;
     }
     /**
      * 消费事件统计
@@ -45,6 +79,16 @@ public class ReportServiceImpl implements ReportService {
      */
     @Override
     public CountConsumptionReportVO CountConumptionReport(ConsumptionReportDTO consumptionReportDTO) {
+        // 生成缓存键
+        String cacheKey = "report:consumption:count:" + JSON.toJSONString(consumptionReportDTO);
+        
+        // 先从缓存中获取
+        Object cachedData = redisUtil.get(cacheKey);
+        if (cachedData != null) {
+            return JSON.parseObject(cachedData.toString(), CountConsumptionReportVO.class);
+        }
+        
+        // 从数据库查询
         LocalDate beginDate = consumptionReportDTO.getBeginDate();
         LocalDate endDate = consumptionReportDTO.getEndDate();
         List<LocalDate> dateList = new ArrayList<>();
@@ -59,7 +103,12 @@ public class ReportServiceImpl implements ReportService {
             Integer count= reportMapper.CountConumptionReport(consumptionReportDTO);
             countList.add(count);
         }
-        return new CountConsumptionReportVO(dateList,countList);
+        CountConsumptionReportVO result = new CountConsumptionReportVO(dateList,countList);
+        
+        // 存入缓存，设置过期时间为30分钟
+        redisUtil.set(cacheKey, JSON.toJSONString(result), 1800);
+        
+        return result;
     }
     /**
      * 消费事件类型统计
@@ -67,6 +116,16 @@ public class ReportServiceImpl implements ReportService {
      */
     @Override
     public CountConsumptionTypeReportVO CountConumptionTypeReport(ConsumptionReportDTO consumptionReportDTO) {
+        // 生成缓存键
+        String cacheKey = "report:consumption:type:" + JSON.toJSONString(consumptionReportDTO);
+        
+        // 先从缓存中获取
+        Object cachedData = redisUtil.get(cacheKey);
+        if (cachedData != null) {
+            return JSON.parseObject(cachedData.toString(), CountConsumptionTypeReportVO.class);
+        }
+        
+        // 从数据库查询
         LocalDate beginDate = consumptionReportDTO.getBeginDate();
         LocalDate endDate = consumptionReportDTO.getEndDate();
         consumptionReportDTO.setBeginDateTime(DateUtil.toStartOfDay(beginDate));
@@ -79,6 +138,10 @@ public class ReportServiceImpl implements ReportService {
             countList.add(count);
         }
         countConsumptionTypeReportVO.setCountList(countList);
+        
+        // 存入缓存，设置过期时间为30分钟
+        redisUtil.set(cacheKey, JSON.toJSONString(countConsumptionTypeReportVO), 1800);
+        
         return countConsumptionTypeReportVO;
     }
     /**
@@ -88,6 +151,16 @@ public class ReportServiceImpl implements ReportService {
      */
     @Override
     public TotalConsumptionReportVO totalConsumtionReport(ConsumptionReportDTO consumptionReportDTO){
+        // 生成缓存键
+        String cacheKey = "report:consumption:total:" + JSON.toJSONString(consumptionReportDTO);
+        
+        // 先从缓存中获取
+        Object cachedData = redisUtil.get(cacheKey);
+        if (cachedData != null) {
+            return JSON.parseObject(cachedData.toString(), TotalConsumptionReportVO.class);
+        }
+        
+        // 从数据库查询
         LocalDate beginDate = consumptionReportDTO.getBeginDate();
         LocalDate endDate = consumptionReportDTO.getEndDate();
         List<LocalDate> dateList = new ArrayList<>();
@@ -102,7 +175,12 @@ public class ReportServiceImpl implements ReportService {
             Double count = reportMapper.totalConsumtionReport(consumptionReportDTO);
             countList.add(count != null ? count : 0.0);
         }
-       return new TotalConsumptionReportVO(dateList,countList);
+        TotalConsumptionReportVO result = new TotalConsumptionReportVO(dateList,countList);
+        
+        // 存入缓存，设置过期时间为30分钟
+        redisUtil.set(cacheKey, JSON.toJSONString(result), 1800);
+        
+        return result;
     }
 
     /**
@@ -112,6 +190,16 @@ public class ReportServiceImpl implements ReportService {
      */
     @Override
     public  Double averageConsumtionReport(ConsumptionReportDTO consumptionReportDTO){
+        // 生成缓存键
+        String cacheKey = "report:consumption:average:" + JSON.toJSONString(consumptionReportDTO);
+        
+        // 先从缓存中获取
+        Object cachedData = redisUtil.get(cacheKey);
+        if (cachedData != null) {
+            return Double.parseDouble(cachedData.toString());
+        }
+        
+        // 从数据库查询
         LocalDate beginDate = consumptionReportDTO.getBeginDate();
         LocalDate endDate = consumptionReportDTO.getEndDate();
         //获取天数
@@ -119,10 +207,15 @@ public class ReportServiceImpl implements ReportService {
         consumptionReportDTO.setBeginDateTime(DateUtil.toStartOfDay(beginDate));
         consumptionReportDTO.setEndDateTime(DateUtil.toEndOfDay(endDate));
         Double total=reportMapper.totalConsumtionReport(consumptionReportDTO);
-        if (total == null) {
-            return 0.0;
+        Double result = 0.0;
+        if (total != null) {
+            result = total/days;
         }
-        return total/days;
+        
+        // 存入缓存，设置过期时间为30分钟
+        redisUtil.set(cacheKey, result.toString(), 1800);
+        
+        return result;
 
     }
     /**
@@ -132,6 +225,16 @@ public class ReportServiceImpl implements ReportService {
      */
     @Override
     public UserReportVO newUserReport(UserReportDTO userReportDTO) {
+        // 生成缓存键
+        String cacheKey = "report:user:new:" + JSON.toJSONString(userReportDTO);
+        
+        // 先从缓存中获取
+        Object cachedData = redisUtil.get(cacheKey);
+        if (cachedData != null) {
+            return JSON.parseObject(cachedData.toString(), UserReportVO.class);
+        }
+        
+        // 从数据库查询
         LocalDate beginDate = userReportDTO.getBeginDate();
         LocalDate endDate = userReportDTO.getEndDate();
         List<LocalDate> dateList = new ArrayList<>();
@@ -146,6 +249,11 @@ public class ReportServiceImpl implements ReportService {
             Integer count= reportMapper.newUserReport(userReportDTO);
             countList.add(count);
         }
-        return new UserReportVO(dateList,countList);
+        UserReportVO result = new UserReportVO(dateList,countList);
+        
+        // 存入缓存，设置过期时间为30分钟
+        redisUtil.set(cacheKey, JSON.toJSONString(result), 1800);
+        
+        return result;
     }
 }

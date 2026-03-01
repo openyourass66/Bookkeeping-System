@@ -14,6 +14,8 @@ import com.zhang.Properties.JwtProperties;
 import com.zhang.Service.EmpService;
 import com.zhang.Utils.JwtUtil;
 import com.zhang.Utils.PasswordUtil;
+import com.zhang.Utils.RedisUtil;
+import com.alibaba.fastjson.JSON;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +30,8 @@ public class EmpServiceImpl implements EmpService {
     private EmpMapper empMapper;
     @Autowired
     private JwtProperties jwtProperties;
+    @Autowired
+    private RedisUtil redisUtil;
     /**
      * 登录
      * @param loginDTO
@@ -54,9 +58,24 @@ public class EmpServiceImpl implements EmpService {
      * @return
      */
     public PageResult<EmpVO> page(EmpQueryDTO  empQueryDTO){
+        // 生成缓存键
+        String cacheKey = "emp:page:" + JSON.toJSONString(empQueryDTO);
+        
+        // 先从缓存中获取
+        Object cachedData = redisUtil.get(cacheKey);
+        if (cachedData != null) {
+            return JSON.parseObject(cachedData.toString(), PageResult.class);
+        }
+        
+        // 从数据库查询
         PageHelper.startPage(empQueryDTO.getPage(),empQueryDTO.getPageSize());
         Page<EmpVO> page =  empMapper.page(empQueryDTO);
-        return new PageResult<>(page.getTotal(),page.getResult());
+        PageResult<EmpVO> result = new PageResult<>(page.getTotal(),page.getResult());
+        
+        // 存入缓存，设置过期时间为5分钟
+        redisUtil.set(cacheKey, JSON.toJSONString(result), 300);
+        
+        return result;
     }
     /**
      * 新增职员
@@ -68,6 +87,8 @@ public class EmpServiceImpl implements EmpService {
         emp.setCreateTime(LocalDateTime.now());
         emp.setUpdateTime(LocalDateTime.now());
         empMapper.insert(emp);
+        // 清除缓存
+        clearEmpCache();
     }
     /**
      * 修改职员信息
@@ -76,6 +97,8 @@ public class EmpServiceImpl implements EmpService {
     public void update(Emp emp){
         emp.setUpdateTime(LocalDateTime.now());
         empMapper.update(emp);
+        // 清除缓存
+        clearEmpCache();
     }
 
     /**
@@ -89,6 +112,8 @@ public class EmpServiceImpl implements EmpService {
         emp.setId(id);
         emp.setStatus(status);
         empMapper.update(emp);
+        // 清除缓存
+        clearEmpCache();
     }
     /**
      * 删除
@@ -98,5 +123,18 @@ public class EmpServiceImpl implements EmpService {
     @Transactional
     public void deleteById(Long id){
         empMapper.deleteById(id);
+        // 清除缓存
+        clearEmpCache();
+    }
+    
+    /**
+     * 清除员工缓存
+     */
+    private void clearEmpCache() {
+        // 这里可以使用Redis的keys命令删除所有员工相关的缓存
+        // 注意：在生产环境中，应该使用更精确的缓存键管理策略
+        // 这里为了简单，使用通配符删除所有员工分页缓存
+        // 实际项目中，应该使用Redis的SCAN命令或者维护一个缓存键列表
+        redisUtil.deleteByPattern("emp:page:*");
     }
 }

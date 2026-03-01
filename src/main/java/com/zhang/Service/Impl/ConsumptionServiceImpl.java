@@ -9,6 +9,8 @@ import com.zhang.Pojo.Entity.PageResult;
 import com.zhang.Service.ConsumptionService;
 import com.zhang.Utils.CurrentHolder;
 import com.zhang.Utils.DateUtil;
+import com.zhang.Utils.RedisUtil;
+import com.alibaba.fastjson.JSON;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +22,8 @@ import java.util.List;
 public class ConsumptionServiceImpl implements ConsumptionService {
     @Autowired
     private ConsumptionMapper consumptionMapper;
+    @Autowired
+    private RedisUtil redisUtil;
 
     /**
      * 保存记录
@@ -31,6 +35,8 @@ public class ConsumptionServiceImpl implements ConsumptionService {
         consumption.setCreateTime(LocalDateTime.now());
         consumption.setUpdateTime(LocalDateTime.now());
         consumptionMapper.insert(consumption);
+        // 清除缓存
+        clearConsumptionCache();
     }
     /**
      * 分页查询
@@ -39,11 +45,26 @@ public class ConsumptionServiceImpl implements ConsumptionService {
      */
     @Override
     public PageResult<Consumption> page(ConsumptionQueryDTO  consumptionQueryDTO){
+        // 生成缓存键
+        String cacheKey = "consumption:page:" + JSON.toJSONString(consumptionQueryDTO);
+        
+        // 先从缓存中获取
+        Object cachedData = redisUtil.get(cacheKey);
+        if (cachedData != null) {
+            return JSON.parseObject(cachedData.toString(), PageResult.class);
+        }
+        
+        // 从数据库查询
         consumptionQueryDTO.setBeginDateTime(DateUtil.toStartOfDay(consumptionQueryDTO.getBeginDate()));
         consumptionQueryDTO.setEndDateTime(DateUtil.toEndOfDay(consumptionQueryDTO.getEndDate()));
         PageHelper.startPage(consumptionQueryDTO.getPage(),consumptionQueryDTO.getPageSize());
         Page<Consumption> page =  consumptionMapper.page(consumptionQueryDTO);
-        return new PageResult<>(page.getTotal(),page.getResult());
+        PageResult<Consumption> result = new PageResult<>(page.getTotal(),page.getResult());
+        
+        // 存入缓存，设置过期时间为5分钟
+        redisUtil.set(cacheKey, JSON.toJSONString(result), 300);
+        
+        return result;
     }
     /**
      * 批量删除
@@ -53,6 +74,8 @@ public class ConsumptionServiceImpl implements ConsumptionService {
     @Transactional(rollbackFor = Exception.class)
     public void deleteByIds(List<Long> ids){
         consumptionMapper.deleteByIds(ids);
+        // 清除缓存
+        clearConsumptionCache();
     }
 
     /**
@@ -63,6 +86,16 @@ public class ConsumptionServiceImpl implements ConsumptionService {
     public void update(Consumption consumption){
         consumption.setUpdateTime(LocalDateTime.now());
         consumptionMapper.update(consumption);
+        // 清除缓存
+        clearConsumptionCache();
+    }
+    
+    /**
+     * 清除消费记录缓存
+     */
+    private void clearConsumptionCache() {
+        // 清除所有消费记录分页缓存
+        redisUtil.deleteByPattern("consumption:page:*");
     }
 
 }

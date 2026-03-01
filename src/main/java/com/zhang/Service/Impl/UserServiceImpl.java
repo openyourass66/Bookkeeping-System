@@ -16,6 +16,8 @@ import com.zhang.Properties.JwtProperties;
 import com.zhang.Service.UserService;
 import com.zhang.Utils.JwtUtil;
 import com.zhang.Utils.PasswordUtil;
+import com.zhang.Utils.RedisUtil;
+import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,6 +34,8 @@ public class UserServiceImpl implements UserService {
     private ConsumptionMapper consumptionMapper;
     @Autowired
     private JwtProperties jwtProperties;
+    @Autowired
+    private RedisUtil redisUtil;
     /**
      * 分页查询
      * @param userQueryDTO
@@ -39,13 +43,28 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public PageResult<UserVO> page(UserQueryDTO userQueryDTO){
+        // 生成缓存键
+        String cacheKey = "user:page:" + JSON.toJSONString(userQueryDTO);
+        
+        // 先从缓存中获取
+        Object cachedData = redisUtil.get(cacheKey);
+        if (cachedData != null) {
+            return JSON.parseObject(cachedData.toString(), PageResult.class);
+        }
+        
+        // 从数据库查询
         LocalDateTime beginDateTime = userQueryDTO.getBeginDate()==null?null:userQueryDTO.getBeginDate().atStartOfDay();
         LocalDateTime endDateTime = userQueryDTO.getEndDate()==null?null:userQueryDTO.getEndDate().atTime(23, 59, 59, 999_999_999);
         userQueryDTO.setBeginDateTime(beginDateTime);
         userQueryDTO.setEndDateTime(endDateTime);
         PageHelper.startPage(userQueryDTO.getPage(),userQueryDTO.getPageSize());
         Page<UserVO> page = userMapper.page(userQueryDTO);
-        return new PageResult<>(page.getTotal(),page.getResult());
+        PageResult<UserVO> result = new PageResult<>(page.getTotal(),page.getResult());
+        
+        // 存入缓存，设置过期时间为5分钟
+        redisUtil.set(cacheKey, JSON.toJSONString(result), 300);
+        
+        return result;
     }
     /**
      * 登录
@@ -77,6 +96,8 @@ public class UserServiceImpl implements UserService {
         u.setCreateTime(LocalDateTime.now());
         u.setUpdateTime(LocalDateTime.now());
         userMapper.insert(u);
+        // 清除缓存
+        clearUserCache();
     }
 
     /**
@@ -102,6 +123,8 @@ public class UserServiceImpl implements UserService {
         user.setId(updatePasswordDTO.getId());
         user.setPassword(updatePasswordDTO.getPassword());
         userMapper.update(user);
+        // 清除缓存
+        clearUserCache();
     }
     /**
      * 根据id查询用户
@@ -110,7 +133,24 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public User selectById(Long id){
-        return userMapper.selectById(id);
+        // 生成缓存键
+        String cacheKey = "user:id:" + id;
+        
+        // 先从缓存中获取
+        Object cachedData = redisUtil.get(cacheKey);
+        if (cachedData != null) {
+            return JSON.parseObject(cachedData.toString(), User.class);
+        }
+        
+        // 从数据库查询
+        User result = userMapper.selectById(id);
+        
+        // 存入缓存，设置过期时间为5分钟
+        if (result != null) {
+            redisUtil.set(cacheKey, JSON.toJSONString(result), 300);
+        }
+        
+        return result;
     }
     /**
      * 修改用户
@@ -120,6 +160,10 @@ public class UserServiceImpl implements UserService {
     public void update(User u){
         u.setUpdateTime(LocalDateTime.now());
         userMapper.update(u);
+        // 清除缓存
+        clearUserCache();
+        // 清除单个用户缓存
+        redisUtil.delete("user:id:" + u.getId());
     }
     /**
      * 删除用户
@@ -132,5 +176,19 @@ public class UserServiceImpl implements UserService {
             throw new BusinessException("该用户有消费记录，不能删除");
         }
         userMapper.deleteById(id);
+        // 清除缓存
+        clearUserCache();
+        // 清除单个用户缓存
+        redisUtil.delete("user:id:" + id);
+    }
+    
+    /**
+     * 清除用户缓存
+     */
+    private void clearUserCache() {
+        // 清除所有用户分页缓存
+        redisUtil.deleteByPattern("user:page:*");
+        // 清除所有报表缓存
+        redisUtil.deleteByPattern("report:*");
     }
 }
